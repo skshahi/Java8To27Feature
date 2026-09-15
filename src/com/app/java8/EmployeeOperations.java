@@ -1,9 +1,9 @@
 package com.app.java8;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 
 public class EmployeeOperations {
 
@@ -32,6 +32,29 @@ public class EmployeeOperations {
 
         Map<String, List<Employee>> groupByDept = employeeList.stream().collect(Collectors.groupingBy(Employee::getDept));
         System.out.println(groupByDept);
+        //Second highest in each dept
+
+        Map<String, Optional<Employee>> secondHighestSalary = employeeList.stream()
+                .collect(Collectors.groupingBy(Employee::getDept, Collectors.collectingAndThen(Collectors.toList(),
+                employees -> employees.stream().sorted(Comparator.comparing(Employee::getSalary, Comparator.reverseOrder()))
+                        .skip(1).findFirst()
+        )));
+
+        System.out.println(secondHighestSalary);
+
+        Map<String, String> empToMap = employeeList.stream().collect(Collectors.toMap(Employee::getName, Employee::getLocation));
+        System.out.println(empToMap);
+
+        ///
+        Map<String, Double> avgSalaryByDept = employeeList.stream().collect(Collectors.groupingBy(Employee::getDept, Collectors.averagingDouble(Employee::getSalary)));
+        System.out.println(avgSalaryByDept);
+
+        DoubleSummaryStatistics doubleSummaryStatistics = employeeList.stream().mapToDouble(Employee::getSalary).summaryStatistics();
+
+        System.out.println(doubleSummaryStatistics.getMax());
+        System.out.println(doubleSummaryStatistics.getAverage());
+        System.out.println(doubleSummaryStatistics);
+
     }
 
     static void main() {
